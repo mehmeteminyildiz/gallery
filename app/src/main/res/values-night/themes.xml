@@ -1,0 +1,25 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MyGallery" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/r_black</item>
+        <item name="colorPrimaryVariant">@color/r_black</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/r_secondary</item>
+        <item name="colorSecondaryVariant">@color/r_secondary</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Material3.Button.50" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Theme.MyGallery" parent="Base.Theme.MyGallery" />
+</resources>
