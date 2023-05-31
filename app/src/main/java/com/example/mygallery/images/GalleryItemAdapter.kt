@@ -1,10 +1,11 @@
-package com.example.mygallery.myApp
+package com.example.mygallery.images
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mygallery.databinding.GalleryItemBinding
@@ -17,6 +18,7 @@ class GalleryItemAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private lateinit var context: Context
 
     private val selectedItemList = ArrayList<ImageModel>()
+    var selectedImageCount = MutableLiveData<Int>(0)
 
     fun setList(newList: ArrayList<ImageModel>) {
         _list.clear()
@@ -69,12 +71,14 @@ class GalleryItemAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             item.isSelected = false
                             imgTick.visibility = View.INVISIBLE
                             selectedItemList.remove(item)
+                            selectedImageCount.value = selectedImageCount.value!! - 1
                             notifyItemChanged(position)
                         } else {
                             // check
                             item.isSelected = true
                             imgTick.visibility = View.VISIBLE
                             selectedItemList.add(item)
+                            selectedImageCount.value = selectedImageCount.value!! + 1
                             notifyItemChanged(position)
                         }
                     }

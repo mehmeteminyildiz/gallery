@@ -23,7 +23,7 @@
 
     <style name="Theme.MyGallery" parent="Base.Theme.MyGallery" />
 
-<!--    Checkbox style-->
+    <!--    Checkbox style-->
 
     <style name="colored_checkbox" parent="Theme.Material3.Light">
         <item name="colorAccent">@color/r_secondary</item>

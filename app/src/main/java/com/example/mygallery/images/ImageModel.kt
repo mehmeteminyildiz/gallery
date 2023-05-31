@@ -1,4 +1,4 @@
-package com.example.mygallery.myApp
+package com.example.mygallery.images
 
 import android.net.Uri
 

@@ -1,4 +1,4 @@
-package com.example.mygallery.myApp
+package com.example.mygallery.images
 
 import android.Manifest
 import android.app.RecoverableSecurityException
@@ -13,20 +13,23 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.example.mygallery.databinding.ActivityMainBinding
+import com.example.mygallery.R
+import com.example.mygallery.databinding.ActivityBiggestImagesBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 
-class MainActivity : AppCompatActivity() {
+class BiggestImagesActivity : AppCompatActivity() {
 
-    val TAG = "MainActivity"
-    private lateinit var binding: ActivityMainBinding
+    val TAG = "BiggestImagesActivity"
+    private lateinit var binding: ActivityBiggestImagesBinding
     private val adapter = GalleryItemAdapter()
     val PERMISSION_REQUEST_CODE = 100
 
@@ -34,22 +37,47 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.plant(Timber.DebugTree())
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityBiggestImagesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         if (checkStoragePermission()) {
             loadImages()
         }
         handleClicks()
+        observeSelectedItemCount()
         intentSenderLauncher =
             registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
                 if (it.resultCode == RESULT_OK) loadImages()
-                else Toast.makeText(this@MainActivity, "Couldn't deleted", Toast.LENGTH_SHORT)
+                else Toast.makeText(this@BiggestImagesActivity, "Couldn't deleted", Toast.LENGTH_SHORT)
                     .show()
             }
     }
+
+    private fun observeSelectedItemCount() {
+        binding.apply {
+            adapter.selectedImageCount.observe(this@BiggestImagesActivity, Observer { size ->
+                if (size > 0) {
+                    cardDeleteSelectedImages.setCardBackgroundColor(
+                        ContextCompat.getColor(
+                            this@BiggestImagesActivity,
+                            R.color.r_black
+                        )
+                    )
+                    (cardDeleteSelectedImages as CardView).isEnabled = true
+                } else {
+                    cardDeleteSelectedImages.setCardBackgroundColor(
+                        ContextCompat.getColor(
+                            this@BiggestImagesActivity,
+                            R.color.r_content
+                        )
+                    )
+                    (cardDeleteSelectedImages as CardView).isEnabled = false
+                }
+            })
+        }
+    }
+
 
     private fun handleClicks() {
         binding.apply {
@@ -123,7 +151,7 @@ class MainActivity : AppCompatActivity() {
                 Timber.e("1")
                 // İzin verilmemiş, kullanıcıdan izin iste
                 ActivityCompat.requestPermissions(
-                    this@MainActivity,
+                    this@BiggestImagesActivity,
                     arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
                     PERMISSION_REQUEST_CODE
                 )
@@ -143,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                 Timber.e("1")
                 // İzin verilmemiş, kullanıcıdan izin iste
                 ActivityCompat.requestPermissions(
-                    this@MainActivity,
+                    this@BiggestImagesActivity,
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                     PERMISSION_REQUEST_CODE
                 )
@@ -166,14 +194,14 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(
-                    this@MainActivity,
+                    this@BiggestImagesActivity,
                     "Read external storage permission granted",
                     Toast.LENGTH_SHORT
                 ).show()
                 loadImages()
             } else {
                 Toast.makeText(
-                    this@MainActivity,
+                    this@BiggestImagesActivity,
                     "Read external storage permission deniede",
                     Toast.LENGTH_SHORT
                 ).show()
