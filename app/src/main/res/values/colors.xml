@@ -30,4 +30,5 @@
 
 
     <color name="r_semi_transparent">#40000000</color>
+    <color name="r_semi_transparent2">#81000000</color>
 </resources>

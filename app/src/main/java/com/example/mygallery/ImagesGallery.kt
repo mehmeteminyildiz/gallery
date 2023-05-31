@@ -37,9 +37,8 @@ class ImagesGallery {
                 val name = cursor.getString(nameColumn)
                 val path = cursor.getString(dataColumn)
                 val size = cursor.getLong(sizeColumn)
-                val model = ImageModel(id, name, path, size)
+                val model = ImageModel(id, name, path, size, false)
                 modelList.add(model)
-
             }
         }
 
