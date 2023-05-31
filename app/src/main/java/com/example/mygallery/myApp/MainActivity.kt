@@ -1,8 +1,9 @@
-package com.example.mygallery
+package com.example.mygallery.myApp
 
 import android.Manifest
-import android.content.ContentResolver
+import android.app.RecoverableSecurityException
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,7 +15,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.mygallery.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 
@@ -40,12 +45,10 @@ class MainActivity : AppCompatActivity() {
         handleClicks()
         intentSenderLauncher =
             registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-                if (it.resultCode == RESULT_OK)
-                    Timber.e("successfully deleted")
-                else
-                    Timber.e("couldn't be deleted")
+                if (it.resultCode == RESULT_OK) loadImages()
+                else Toast.makeText(this@MainActivity, "Couldn't deleted", Toast.LENGTH_SHORT)
+                    .show()
             }
-
     }
 
     private fun handleClicks() {
@@ -58,29 +61,57 @@ class MainActivity : AppCompatActivity() {
 
     private fun deleteProcess() {
         val willDeleteItemList = adapter.getSelectedItems()
+        val photoUris = ArrayList<Uri?>()
+        willDeleteItemList.map { it -> photoUris.add(it.contentUri) }
 
-        for (item in willDeleteItemList) {
-            Timber.e("item : $item")
-//            id=27, name=IMG_20230530_161844.jpg, path=/storage/emulated/0/Pictures/IMG_20230530_161844.jpg, size=140537
-            deleteImage(contentResolver, item)
+        lifecycleScope.launch {
+            deleteItem(photoUris = photoUris)
         }
     }
 
-    private fun deleteImage(contentResolver: ContentResolver?, item: ImageModel): Int? {
-        contentResolver?.let { contentResolver ->
-            val path = item.path
-            val selection = "${MediaStore.Images.Media.DATA} = ?"
-            val selectionArgs = arrayOf(path)
+    private suspend fun deleteItem(photoUris: ArrayList<Uri?>) {
 
-            return contentResolver.delete(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                selection,
-                selectionArgs
-            )
+        withContext(Dispatchers.IO) {
+            for (item in photoUris) {
+                try {
+                    contentResolver.delete(item!!, null, null)
+                } catch (e: SecurityException) {
+                    val intentSender = when {
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                            MediaStore.createDeleteRequest(
+                                contentResolver, listOf(item)
+                            ).intentSender
+                        }
+
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                            val recoverableSecurityException = e as? RecoverableSecurityException
+                            recoverableSecurityException?.userAction?.actionIntent?.intentSender
+                        }
+
+                        else -> null
+                    }
+                    intentSender?.let { sender ->
+                        intentSenderLauncher.launch(
+                            IntentSenderRequest.Builder(sender).build()
+                        )
+                    }
+                }
+            }
+
         }
-        return null
     }
 
+
+    private fun loadImages() {
+        val modelList = ImagesGallery().test(applicationContext)
+        binding.apply {
+            rv.adapter = adapter
+            adapter.setList(modelList)
+            adapter.setOnClickListenerCustom {
+                Log.e("CLICKED", it.contentUri.toString())
+            }
+        }
+    }
 
     private fun checkStoragePermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -150,29 +181,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadImages() {
-//        val list = ImagesGallery().listOfImages(this)
-        val modelList = ImagesGallery().test(applicationContext)
-        binding.apply {
-            rv.adapter = adapter
-            adapter.setList(modelList)
-            adapter.setOnClickListenerCustom {
-                Log.e("CLICKED", it)
-            }
-        }
-
-//        Log.e("X", "Y")
-//        Log.e("LIST", "list : $list")
-//
-//
-//        binding.apply {
-//            rv.adapter = adapter
-//
-//            adapter.setList(list)
-//            adapter.setOnClickListenerCustom {
-//                Log.e("CLICKED", it)
-//            }
-//        }
-    }
 
 }

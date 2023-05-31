@@ -1,5 +1,6 @@
-package com.example.mygallery
+package com.example.mygallery.myApp
 
+import android.content.ContentUris
 import android.content.Context
 import android.provider.MediaStore
 import android.util.Log
@@ -13,7 +14,7 @@ class ImagesGallery {
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media.SIZE
         )
-        val orderBy = MediaStore.Images.Media.SIZE + " DESC"
+        val orderBy = MediaStore.Images.Media.DATE_TAKEN + " DESC"
         val selection = ""
         val selectionArgs = arrayOf<String>()
         Log.e("TAGGGGG", "ÇALIŞTI")
@@ -37,7 +38,12 @@ class ImagesGallery {
                 val name = cursor.getString(nameColumn)
                 val path = cursor.getString(dataColumn)
                 val size = cursor.getLong(sizeColumn)
-                val model = ImageModel(id, name, path, size, false)
+                val contentUri = ContentUris.withAppendedId(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    id
+                )
+
+                val model = ImageModel(id, name, path, size, false, contentUri)
                 modelList.add(model)
             }
         }

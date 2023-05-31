@@ -1,4 +1,4 @@
-package com.example.mygallery
+package com.example.mygallery.myApp
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -61,7 +61,8 @@ class GalleryItemAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             llItem.setOnClickListener {
-                onClickListenerCustom?.let {
+                onClickListenerCustom?.let { listener ->
+                    listener(item)
                     item.isSelected?.let { isSelected ->
                         if (isSelected) {
                             // uncheck
@@ -96,8 +97,8 @@ class GalleryItemAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    private var onClickListenerCustom: ((path: String) -> Unit)? = null
-    fun setOnClickListenerCustom(f: ((path: String) -> Unit)) {
+    private var onClickListenerCustom: ((item: ImageModel) -> Unit)? = null
+    fun setOnClickListenerCustom(f: ((item: ImageModel) -> Unit)) {
         onClickListenerCustom = f
     }
 }
