@@ -4,6 +4,7 @@ data class ImageModel(
     var id: Long? = null,
     var name: String? = null,
     var path: String? = null,
-    var size: Long? = null
+    var size: Long? = null,
+    var isSelected: Boolean? = false
 
 )
