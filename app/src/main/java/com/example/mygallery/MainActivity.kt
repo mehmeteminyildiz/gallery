@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mygallery.databinding.ActivityMainBinding
+import com.example.mygallery.files.BiggestFilesActivity
 import com.example.mygallery.images.BiggestImagesActivity
 import timber.log.Timber
 
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun gotoFiles() {
-        val intent = Intent(this@MainActivity, BiggestImagesActivity::class.java)
+        val intent = Intent(this@MainActivity, BiggestFilesActivity::class.java)
         startActivity(intent)
     }
 

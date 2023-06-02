@@ -55,9 +55,8 @@
                 android:id="@+id/rvFiles"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="3"
-                tools:listitem="@layout/gallery_item" />
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/file_item" />
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
