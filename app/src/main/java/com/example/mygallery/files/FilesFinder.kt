@@ -12,6 +12,56 @@ created by Mehmet E. Yıldız
  **/
 class FilesFinder {
 
+    // andorid 13 için chatgpt: java.io.File kullanarak belgeleri listeleme:
+    /*fun loadFilesUsingFile() {
+        val directory: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val files = directory.listFiles()
+        if (files != null) {
+            for (file in files) {
+                if (file.isFile) {
+                    val fileName = file.name
+                    val fileSize = file.length()
+                    Timber.d("FileName: $fileName, Size: $fileSize bytes")
+                }
+            }
+        }
+    }*/
+
+    // android 13 için chatgpt : androidx.documentfile.provider.DocumentFile kullanarak belgeleri listeleme:
+    /*fun loadFilesUsingDocumentFile(context: Context) {
+        val documentUri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        val projection = arrayOf(
+            MediaStore.Files.FileColumns._ID,
+            MediaStore.Files.FileColumns.DISPLAY_NAME,
+            MediaStore.Files.FileColumns.SIZE
+        )
+        val selection = "${MediaStore.Files.FileColumns.MEDIA_TYPE}=${MediaStore.Files.FileColumns.MEDIA_TYPE_DOCUMENT}"
+        val sortOrder = "${MediaStore.Files.FileColumns.SIZE} DESC"
+
+        val cursor = context.contentResolver.query(
+            documentUri,
+            projection,
+            selection,
+            null,
+            sortOrder
+        )
+
+        cursor?.use { cursor ->
+            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
+            val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME)
+            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE)
+
+            while (cursor.moveToNext()) {
+                val fileId = cursor.getLong(idColumn)
+                val fileName = cursor.getString(nameColumn)
+                val fileSize = cursor.getLong(sizeColumn)
+
+                Timber.d("FileName: $fileName, Size: $fileSize bytes")
+            }
+        }
+    }*/
+
+
     fun loadFiles(context: Context) {
         // buradaki yöntemi kullanarak her klasör ve dosya için isFile ve isDirectory kontrolü yaparak bütün dosyalara erişebiliriz diye
         // düşünüyorum. Alternatif bir yöntem vardır, onları da araştıralım.
